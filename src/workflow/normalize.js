@@ -1,4 +1,4 @@
-const {config} = require('../utils');
+const config = require('../utils/config');
 
 const keys = config.get('XLSX.FINAL_FIELDNAMES', []);
 

@@ -1,3 +1,6 @@
+// System Packages
+const fs = require('fs');
+
 // Installed Packages
 const csv = require('csvtojson');
 const jsonfile = require('jsonfile');
@@ -12,7 +15,7 @@ const reader = {
   json: async (filename = 'tempData') =>
     Promise.resolve().then(() => {
       const filePath = paths.fromRoot('storage', `${filename}.json`);
-      if (!require('fs').existsSync(filePath)) {
+      if (!fs.existsSync(filePath)) {
         return [];
       }
       return jsonfile.readFileSync(filePath);

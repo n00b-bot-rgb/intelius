@@ -1,3 +1,5 @@
+const paths = require('./paths');
+
 const logger = require('../../logger')('SCREENSHOT');
 
 const screenshot = async (page, filename) => {
@@ -7,7 +9,7 @@ const screenshot = async (page, filename) => {
       .split(' ')
       .join('_')}_${Date.now()}`;
     await page.screenshot({
-      path: `screenshots/${finalFilename}.png`,
+      path: paths.fromRoot('screenshots', `${finalFilename}.png`),
     });
     logger.info('End Screenshot');
   }

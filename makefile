@@ -1,5 +1,9 @@
 setup:
-	mkdir logs screenshots storage playground
+	node src/workflow/setup.js
+preflight:
+	node src/workflow/preflight.js
+workflow:
+	yarn workflow
 cleanlogs:
 	rm logs/*
 cleanscreenshots:

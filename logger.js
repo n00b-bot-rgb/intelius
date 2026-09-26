@@ -1,12 +1,14 @@
 const log4js = require('log4js');
 
+const {directories} = require('./src/utils/paths');
+
 const developmentAppenders = {
   console: {
     type: 'console',
   },
   dev: {
     type: 'file',
-    filename: './logs/debug.log',
+    filename: `${directories.logs}/debug.log`,
     layout: {
       type: 'pattern',
       pattern: '[%d{yyyy-MM-dd hh:mm:ss}] [%-5p] [%c] - %m',
@@ -19,7 +21,7 @@ const developmentAppenders = {
 const productionAppenders = {
   app: {
     type: 'file',
-    filename: './logs/app.log',
+    filename: `${directories.logs}/app.log`,
     layout: {
       type: 'pattern',
       pattern: '[%d{yyyy-MM-dd hh:mm:ss}] [%-5p] [%c]- %m',
@@ -31,7 +33,7 @@ const productionAppenders = {
   },
   emergencies: {
     type: 'file',
-    filename: './logs/error.log',
+    filename: `${directories.logs}/error.log`,
     layout: {
       type: 'pattern',
       pattern: '[%d{yyyy-MM-dd hh:mm:ss}] [%-5p] [%c]- %m',

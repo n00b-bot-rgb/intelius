@@ -6,8 +6,10 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const jsonfile = require('jsonfile');
 const XLSX = require('xlsx');
 
+const paths = require('./paths');
+
 const csvWriter = createCsvWriter({
-  path: 'storage/out.csv',
+  path: paths.files.outputCsv,
   encoding: 'utf-8',
   append: true,
   header: [
@@ -49,7 +51,7 @@ const csvWriter = createCsvWriter({
 const writer = {
   csv: csvWriter,
   json: async (datum, filename = 'tempData') => {
-    const FILENAME = `storage/${filename}.json`;
+    const FILENAME = paths.fromRoot('storage', `${filename}.json`);
     let data = [];
     if (fs.existsSync(FILENAME)) {
       data = await jsonfile.readFileSync(FILENAME);
@@ -64,7 +66,7 @@ const writer = {
       cellDates: true,
     });
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
-    XLSX.writeFile(wb, `storage/${filename}.xlsx`);
+    XLSX.writeFile(wb, paths.fromRoot('storage', `${filename}.xlsx`));
   },
 };
 

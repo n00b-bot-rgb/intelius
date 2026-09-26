@@ -5,7 +5,10 @@ const fs = require('fs');
 const _ = require('lodash');
 
 // Our Packages
+const config = require('./config');
 const reader = require('./reader');
+const {emptyPerson, rowSeparator} = require('../workflow/normalize');
+const paths = require('./paths');
 
 const isSearchable = obj => {
   const ADDRESS = reader.yaml().XLSX.ADDRESS;
@@ -24,35 +27,21 @@ const timeoutPromise = timeout => {
 
 const throttle = () => {
   const randomNum = Math.floor(Math.random() * 5) + 1;
-  return timeoutPromise(500 * randomNum);
+  return timeoutPromise(config.get('RUNTIME.THROTTLE_MULTIPLIER_MS', 500) * randomNum);
 };
 
 const backupFile = async fileName => {
-  const FILENAME = `storage/${fileName}`;
+  const FILENAME = paths.fromRoot('storage', fileName);
   if (fs.existsSync(FILENAME)) {
-    const COPY_FILENAME = `storage/backup/${fileName}.${Date.now()}.bak`;
+    const COPY_FILENAME = paths.fromRoot(
+      'storage',
+      'backup',
+      `${fileName}.${Date.now()}.bak`
+    );
     fs.copyFileSync(FILENAME, COPY_FILENAME);
     fs.unlinkSync(FILENAME);
   }
 };
-
-const keys = reader.yaml().XLSX.FINAL_FIELDNAMES;
-const rowSeparator = [
-  keys.reduce(
-    (prev, next) => ({
-      ...prev,
-      [next]: '**',
-    }),
-    {}
-  ),
-];
-const emptyPerson = keys.reduce(
-  (prev, next) => ({
-    ...prev,
-    [next]: '',
-  }),
-  {}
-);
 
 module.exports = {
   isSearchable,

@@ -25,6 +25,62 @@ XLSX:
       'Attorney_State',
       'Attorney_Zip',
     ]
+PATHS:
+  DIRECTORIES:
+    LOGS: logs
+    SCREENSHOTS: screenshots
+    STORAGE: storage
+    BACKUP: storage/backup
+    PLAYGROUND: playground
+  FILES:
+    INPUT_XLSX: storage/input.xlsx
+    TEMP_DATA_JSON: storage/tempData.json
+    OUTPUT_XLSX: storage/out.xlsx
+    OUTPUT_CSV: storage/out.csv
+RUNTIME:
+  REQUIRED_ENV:
+    - email
+    - password
+  THROTTLE_MULTIPLIER_MS: 500
+  BROWSER_EXECUTABLE_ENV: PUPPETEER_EXECUTABLE_PATH
+PIPELINE:
+  CAPABILITIES:
+    PREFLIGHT:
+      INPUTS:
+        - configuration
+        - filesystem
+        - browser_runtime
+      OUTPUTS:
+        - validated_runtime
+    LOGIN:
+      INPUTS:
+        - credentials
+        - browser_page
+      OUTPUTS:
+        - authenticated_session
+    INPUT_MAPPING:
+      INPUTS:
+        - storage/input.xlsx
+        - XLSX schema
+      OUTPUTS:
+        - normalized_people
+    PROFILE_LINK_DISCOVERY:
+      INPUTS:
+        - authenticated_session
+        - normalized_people
+      OUTPUTS:
+        - profile_links
+    PROFILE_ENRICHMENT:
+      INPUTS:
+        - profile_links
+        - normalized_people
+      OUTPUTS:
+        - normalized_records
+    EXPORT:
+      INPUTS:
+        - normalized_records
+      OUTPUTS:
+        - storage/out.xlsx
   FINAL_FIELDNAMES:
     [
       'County',

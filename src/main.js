@@ -3,35 +3,31 @@ const Promise = require('bluebird');
 
 // Our Packages
 const {profileLinksScraper, profileScraper} = require('./scraper');
-const {helper, reader, writer} = require('./utils');
+const {reader, writer} = require('./utils');
+const {loadPeople, runCapability, runPersonPipeline} = require('./workflow/pipeline');
 // logger
 const logger = require('../logger')('MAIN');
 
 const main = async page =>
-  reader.xlsx('input').then(persons =>
+  loadPeople().then(persons =>
     Promise.each(persons, async (person, index) => {
       logger.info(`Searching for index: ${index + 1}`);
-      if (!helper.isSearchable(person)) {
-        logger.info(`Not Searchable Person: ${JSON.stringify(person)}`);
-      } else {
-        const profileLinks = await profileLinksScraper(page, person);
-        logger.info(`profileLinks: ${profileLinks.length}`);
-        let matched = false;
-        for (const link of profileLinks) {
-          const arr = await profileScraper(page, link, person);
-          await helper.throttle();
-          if (arr.length > 0) {
-            matched = true;
-            await writer.json(arr, 'tempData');
-          }
-        }
-        if (matched) {
-          await writer.json(helper.rowSeparator, 'tempData');
-        }
-      }
+      return runPersonPipeline({
+        index,
+        page,
+        person,
+        profileLinksScraper,
+        profileScraper,
+      }).catch(error => {
+        logger.error(
+          `Person pipeline failed at index ${index + 1}: ${
+            error && error.stack ? error.stack : error
+          }`
+        );
+      });
     }).then(async () => {
       const jsonData = await reader.json('tempData');
-      await writer.xlsx(jsonData);
+      await runCapability('EXPORT', () => writer.xlsx(jsonData));
       logger.info('COMPLETED!!!');
     })
   );

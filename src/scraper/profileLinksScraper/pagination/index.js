@@ -4,6 +4,7 @@ const cheerio = require('cheerio');
 // Our Packages
 const SELECTORS = require('./selectors');
 const {helper} = require('../../../utils');
+const screenshot = require('../../../utils/screenshot');
 const logger = require('../../../../logger')('PAGINATION');
 
 const isItLastPage = $ => $(SELECTORS.LAST_PAGE_PAGINATION).length > 0;
